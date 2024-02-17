@@ -1,0 +1,189 @@
+.ModalSaveMusic {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.ModalSaveMusic > div {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white);
+    width: 85%;
+    max-height: 90%;
+    border-radius: 15px;
+    padding: 20px 15px;
+    overflow: auto;
+    gap: 15px;
+}
+
+.ModalSaveMusic > div::-webkit-scrollbar {
+    width: 0;
+    /* background-color: var(--secondary); */
+}
+
+/* .ModalSaveMusic > div::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+    border-radius: 10px;
+}
+
+.ModalSaveMusic > div::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+}
+
+.ModalSaveMusic > div::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+    border-radius: 10px;
+} */
+
+.ModalSaveMusicHeader {
+    position: relative;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.ModalSaveMusicBody button {
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+.ModalSaveMusicBody .inputGroup {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    gap: 5px;
+}
+
+.ModalSaveMusicBody button {
+    width: 100%;
+    padding: 5px 10px;
+    border: none;
+    color: var(--white);
+    font-weight: bold;
+    background-color: var(--blue-primary);
+    border-radius: 5px;
+    box-shadow: var(--box-shadow-light);
+    cursor: pointer;
+}
+
+.ModalSaveMusic input {
+    position: relative;
+    width: 100%;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.44);
+    background: #FFF;
+    box-shadow: var(--box-shadow-light);
+    padding: 0px 15px;
+}
+
+.ModalSaveMusic select {
+    width: 100%;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.44);
+    background: #FFF;
+    box-shadow: var(--box-shadow-light);
+    padding: 0px 15px;
+}
+
+.ModalSaveMusicBody textarea {
+    width: 100%;
+    height: 150px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.44);
+    background: #FFF;
+    box-shadow: var(--box-shadow-light);
+    font-family: 'Inter', sans-serif;
+    padding: 10px 15px;
+    margin: 0px;
+    resize: none;
+    overflow: auto;
+}
+
+.ModalSaveMusicBody .inputIcon {
+    position: relative;
+    display: flex;
+}
+
+.ModalSaveMusicBody .inputIcon input {
+    padding-right: 45px;
+}
+
+.ModalSaveMusicBody .inputIcon i {
+    position: absolute;
+    right: 5px;
+    display: flex;
+    align-items: center;
+    font-size: 1.3em;
+    padding: 5px;
+    height: 100%;
+    cursor: pointer;
+}
+
+.ModalSaveMusicBody iframe {
+    border: none;
+    border-radius: 10px;
+    box-shadow: var(--box-shadow-light);
+}
+
+.ModalSaveMusicFooter {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.ModalSaveMusicFooter button {
+    width: 100px;
+    border-radius: 15px;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 15px;
+    border: none;
+    box-shadow: var(--box-shadow-light);
+    cursor: pointer;
+}
+
+.lyrics {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.addParagraph {
+    font-size: .7em;
+    color: var(--blue-secondary);
+}
+
+.btnClose {
+    background-color: var(--secondary);
+    color: var(--blue-secondary);
+}
+
+.btnSave {
+    background-color: var(--blue-primary);
+    color: var(--white);
+}
+
+.BtnOpenModal {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    background-color: var(--blue-primary);
+    padding: 20px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.BtnOpenModal i {
+    font-size: 1.4em;
+    color: var(--white);
+}

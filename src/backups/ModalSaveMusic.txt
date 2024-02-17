@@ -1,0 +1,146 @@
+import React, { useContext, useState } from 'react'
+import styles from './ModalSaveMusic.module.css'
+import { Input } from '../../input/Input'
+import { Textarea } from '../../textarea/Textarea'
+import { GetDate } from '../../../utils/Utils'
+import { addDoc, collection } from 'firebase/firestore'
+import { db } from '../../../services/firebase'
+import { Select } from '../../select/Select'
+
+export const ModalSaveMusic = ({ user, repertoireId }) => {
+  const [name, setName] = useState('')
+  const [artist, setArtist] = useState('')
+  const [tone, setTone] = useState('')
+  const [bpm, setBpm] = useState('')
+  const [lyrics, setLyrics] = useState('')
+  const [lyricsNotFound, setLyricsNotFound] = useState(false)
+  const [videoId, setVideoId] = useState('')
+  const [open, setOpen] = useState(false)
+
+  const setVideoLyricsAutomatically = async (nameMusic, artistMusic) => {
+    if(!nameMusic || !artistMusic) return
+
+    const query = `${nameMusic} ${artistMusic}`
+
+    const apiKey = 'AIzaSyAngREoduuV1N1wUk_zHvNeq4fPDIWpTgI';
+    const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&videoCategoryId=10&type=video&key=${apiKey}`;
+  
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => {
+        
+        setVideoId(data.items[0].id.videoId)
+      })
+      .catch(error => {
+        console.error('Erro ao realizar a pesquisa:', error);
+      });
+
+    const token = "f260c4df81d7b849758ebc2f8094ba5e";
+
+    const lyrics = await fetch(`https://api.vagalume.com.br/search.php?art=${encodeURIComponent(artistMusic)}&mus=${encodeURIComponent(nameMusic)}&apikey=${token}`, {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(data => 
+        {
+          if(data.mus) {
+            return data.mus[0].text
+          } else {
+            setLyricsNotFound(true)
+            setTimeout(() => {
+              setLyricsNotFound(false)
+            }, 2000);
+            return ''
+          }
+    })
+    .catch(error => {
+        console.error('Erro ao obter lista de livros:', error);
+    });
+    setLyrics(lyrics)
+    
+  }
+
+
+  const saveMusic = () => {
+    if(!name || !artist) return
+
+    let formatLyrics = []
+
+    if(lyrics) {
+      formatLyrics = lyrics.split('\n\n');
+      formatLyrics = formatLyrics.map(paragrafo => ({ lyrics: paragrafo, annotation: '' }));
+    }
+
+    addDoc(collection(db, "users", user.uid, "repertoires", repertoireId, "musics"), {
+      name: name,
+      artist: artist,
+      tone: tone,
+      bpm: bpm,
+      lyrics: formatLyrics
+    }).then(() => {
+      setOpen(!open)
+      setName('')
+      setArtist('')
+      setTone('')
+      setBpm('')
+      setLyrics('')
+    }).catch(() => {
+      alert('Não foi possível salvar o repertório')
+    })
+  }
+
+  return (
+    <>
+      <button className={styles.BtnOpenModal} onClick={() => setOpen(!open)}><i className="fa-solid fa-plus"></i></button>
+      {open && (
+        <div className={styles.ModalSaveMusic} onClick={() => setOpen(!open)}>
+          <div onClick={(e) => e.stopPropagation()}>
+            <div className={styles.ModalSaveMusicHeader}>
+              <h3>Adicionar uma música</h3>
+            </div>
+            <hr />
+            <div className={styles.ModalSaveMusicBody}>
+              <label htmlFor="name">Nome da música</label>
+              <Input placeholder='Nome da música' id='name' value={name} onChange={setName} />
+              <label htmlFor="artist">Artista/Banda</label>
+              <Input placeholder='Artista ou Banda' id='artist' value={artist} onChange={setArtist} />
+              <label htmlFor="tone">Tom</label>
+              <Select id='tone' value={tone} onChange={setTone} >
+                <option value="C">C</option>
+                <option value="C#">C#</option>
+                <option value="D">D</option>
+                <option value="D#">D#</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+                <option value="F#">F#</option>
+                <option value="G">G</option>
+                <option value="G#">G#</option>
+                <option value="A">A</option>
+                <option value="A#">A#</option>
+                <option value="B">B</option>
+              </Select>
+              <label htmlFor="bpm">BPM</label>
+              <Input type='number' placeholder='BPM da música' id='bpm' value={bpm} onChange={setBpm} />
+              <button onClick={() => setVideoLyricsAutomatically(name, artist)}><i className="fa-solid fa-bolt"></i> Gerar letra automaticamente</button>
+              <div className={styles.lyrics}>
+                <label htmlFor="lyrics">Vídeo</label>
+                <button onClick={() => setVideoLyricsAutomatically(name, artist)}><i className="fa-solid fa-bolt"></i> Gerar vídeo automaticamente</button>
+              </div>
+              {videoId && <iframe width="100%" height="auto" src={`https://www.youtube.com/embed/${videoId}`} title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>}
+              <div className={styles.lyrics}>
+                <label htmlFor="lyrics">Letra</label>
+                <button onClick={() => setVideoLyricsAutomatically(name, artist)}><i className="fa-solid fa-bolt"></i> Gerar letra automaticamente</button>
+              </div>
+              {lyricsNotFound && <span className={styles.lyricsNotFound}>Não foi possível gerar a letra!</span>}
+              <Textarea placeholder='Letra da música' id='lyrics' value={lyrics} onChange={setLyrics} />
+            </div>
+            <div className={styles.ModalSaveMusicFooter}>
+              <button className={styles.btnClose} onClick={() => setOpen(!open)}>Cancelar</button>
+              <button className={styles.btnSave} onClick={saveMusic}>Salvar</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}

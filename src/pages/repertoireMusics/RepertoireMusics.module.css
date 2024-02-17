@@ -1,0 +1,102 @@
+.repertoireMusics {
+    height: 100%;
+    background-color: var(--primary);
+}
+
+.repertoireMusics header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--white);
+    color: var(--text-primary);
+    padding: 20px 25px;
+    border-radius: 0px 0px 15px 15px;
+}
+
+.repertoireMusics header i {
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+.repertoireMusics main .mainHeader section {
+    padding: 15px 25px;
+}
+
+.repertoireMusics main .mainHeader h1 {
+    font-size: 1.5em;
+}
+
+.repertoireMusics main .mainHeader div {
+    background-color: var(--white);
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.repertoireMusics main .mainHeader input {
+    position: relative;
+    width: 100%;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.44);
+    background: #FFF;
+    box-shadow: var(--box-shadow-light);
+    padding: 0px 15px;
+}
+
+.repertoireMusics main .mainBody {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+    background-color: var(--primary);
+    padding: 15px;
+}
+
+.repertoireMusics main .mainBody > a {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--white);
+    text-decoration: none;
+    color: var(--text-primary);
+    border: 1px solid rgba(0, 0, 0, 0.44);
+    border-radius: 10px;
+    box-shadow: var(--box-shadow-light);
+    cursor: pointer;
+}
+
+.repertoireMusics main .mainBody > a > section {
+    padding: 20px;
+}
+
+.repertoireMusics main .mainBody > a > div > h5 {
+    color: var(--blue-secondary);
+    font-size: 1em;
+}
+
+.repertoireMusics main .mainBody > a > div > p {
+    color: var(--text-secondary);
+    font-size: .8em;
+    margin-bottom: 5px;
+}
+
+.repertoireMusics main .mainBody > a > div > span {
+    color: var(--text-primary);
+    font-size: .9em;
+}
+
+.BtnAddMusic {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    background-color: var(--blue-primary);
+    padding: 20px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.BtnAddMusic i {
+    font-size: 1.4em;
+    color: var(--white);
+}

@@ -1,0 +1,174 @@
+import React, { useContext, useState } from 'react'
+import styles from './ModalSaveMusic.module.css'
+import { Input } from '../../input/Input'
+import { Textarea } from '../../textarea/Textarea'
+import { GetDate, VideoId } from '../../../utils/Utils'
+import { addDoc, collection } from 'firebase/firestore'
+import { db } from '../../../services/firebase'
+import { Select } from '../../select/Select'
+import { AuthContext } from '../../../contexts/AuthContext'
+import { GetTrack } from '../../../services/apiSpotify'
+import { GetLyrics } from '../../../services/apiVagalume'
+import { GetVideo } from '../../../services/apiYoutube'
+
+export const ModalSaveMusic = ({ user, repertoireId, getMusics }) => {
+  const { tokenApiSpotify, getTokenApiSpotify } = useContext(AuthContext)
+  const [name, setName] = useState('')
+  const [artist, setArtist] = useState('')
+  const [tone, setTone] = useState('C')
+  const [bpm, setBpm] = useState('')
+  const [lyrics, setLyrics] = useState('')
+  const [lyricsNotFound, setLyricsNotFound] = useState(false)
+  const [videoId, setVideoId] = useState('')
+  const [videoUrl, setVideoUrl] = useState('')
+  const [showVideo, setShowVideo] = useState(false)
+  const [audioUrl, setAudioUrl] = useState('')
+  const [open, setOpen] = useState(false)
+
+  const setDataAutomatically = async () => {
+    if (!name || !artist) return
+
+    GetVideo(name, artist)
+      .then(video => {
+        if (video.items) {
+          setVideoUrl(`https://www.youtube.com/watch?v=${video.items[0].id.videoId}`)
+          setShowVideo(false)
+        }
+      })
+
+    GetTrack(name, artist, tokenApiSpotify).then((track) => {
+        setAudioUrl(track.tracks.items[0].external_urls.spotify)
+      })
+    
+    GetLyrics(name, artist)
+      .then(data => {
+        if (data.mus) {
+          setLyrics(data.mus[0].text)
+        } else {
+          setLyrics('')
+          setLyricsNotFound(true)
+          setTimeout(() => {
+            setLyricsNotFound(false)
+          }, 2000);
+        }
+      })
+  }
+
+  const getVideoId = () => {
+
+    const videoId = VideoId(videoUrl)
+    
+    if (videoId) {
+      setVideoId(videoId)
+      setShowVideo(true)
+    } else {
+      alert('O vídeo não foi encontrado!')
+    }
+  }
+
+  const saveMusic = () => {
+    if (!name || !artist) return
+
+    let formatLyrics = []
+
+    if (lyrics) {
+      formatLyrics = lyrics.split('\n\n');
+      formatLyrics = formatLyrics.map(paragrafo => ({ lyrics: paragrafo, annotation: '' }));
+    }
+
+    addDoc(collection(db, "users", user.uid, "repertoires", repertoireId, "musics"), {
+      name: name,
+      artist: artist,
+      tone: tone,
+      bpm: bpm,
+      lyrics: formatLyrics,
+      videoUrl: videoUrl,
+      audioUrl: audioUrl
+    }).then(() => {
+      getMusics()
+      setOpen(!open)
+      setName('')
+      setArtist('')
+      setTone('')
+      setBpm('')
+      setLyrics('')
+      setVideoUrl('')
+      setShowVideo(false)
+    }).catch((e) => {
+      console.log(e)
+      alert('Não foi possível salvar o repertório')
+    })
+  }
+
+  return (
+    <>
+      <button className={styles.BtnOpenModal} onClick={() => setOpen(!open)}><i className="fa-solid fa-plus"></i></button>
+      {open && (
+        <div className={styles.ModalSaveMusic} onClick={() => setOpen(!open)}>
+          <div onClick={(e) => e.stopPropagation()}>
+            <div className={styles.ModalSaveMusicHeader}>
+              <h3>Adicionar uma música</h3>
+            </div>
+            <hr />
+            <div className={styles.ModalSaveMusicBody}>
+              <div className={styles.inputGroup}>
+                <label htmlFor="name">Nome da música</label>
+                <Input placeholder='Nome da música' id='name' value={name} onChange={setName} />
+              </div>
+              <div className={styles.inputGroup}>
+                <label htmlFor="artist">Artista/Banda</label>
+                <Input placeholder='Artista ou Banda' id='artist' value={artist} onChange={setArtist} />
+              </div>
+              <div className={styles.inputGroup}>
+                <label htmlFor="tone">Tom</label>
+                <Select id='tone' value={tone} onChange={setTone} >
+                  <option value="C">C</option>
+                  <option value="C#">C#</option>
+                  <option value="D">D</option>
+                  <option value="D#">D#</option>
+                  <option value="E">E</option>
+                  <option value="F">F</option>
+                  <option value="F#">F#</option>
+                  <option value="G">G</option>
+                  <option value="G#">G#</option>
+                  <option value="A">A</option>
+                  <option value="A#">A#</option>
+                  <option value="B">B</option>
+                </Select>
+              </div>
+              <div className={styles.inputGroup}>
+                <label htmlFor="bpm">BPM</label>
+                <Input type='number' placeholder='BPM da música' id='bpm' value={bpm} onChange={setBpm} />
+              </div>
+              <button onClick={() => setDataAutomatically()}><i className="fa-solid fa-bolt"></i> Gerar dados automaticamente</button>
+              <div className={styles.inputGroup}>
+                <label htmlFor="videoUrl">Vídeo</label>
+                <div className={styles.inputIcon}>
+                  <Input type='url' placeholder='https://...' id='videoUrl' value={videoUrl} onChange={(setVideoUrl)} />
+                  <i className={`fa-solid fa-eye${showVideo ? '-slash' : ''}`} onClick={() => showVideo ? setShowVideo(false) : getVideoId()}></i>
+                </div>
+              </div>
+              {showVideo && <iframe width="100%" height="auto" id='video' src={`https://www.youtube.com/embed/${videoId}`} title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>}
+              <div className={styles.inputGroup}>
+                <label htmlFor="audioUrl">Áudio</label>
+                <div className={styles.inputIcon}>
+                  <Input type='url' placeholder='https://...' id='audioUrl' value={audioUrl} onChange={(setAudioUrl)} />
+                  <i className="fa-solid fa-arrow-up-right-from-square" onClick={() => audioUrl && window.open(`${audioUrl}`, '_blank')}></i>
+                </div>
+              </div>
+              <div className={styles.inputGroup}>
+                <label htmlFor="lyrics">Letra</label>
+                {lyricsNotFound && <span className={styles.lyricsNotFound}>Não foi possível gerar a letra!</span>}
+                <Textarea placeholder='Letra da música' id='lyrics' value={lyrics} onChange={setLyrics} />
+              </div>
+            </div>
+            <div className={styles.ModalSaveMusicFooter}>
+              <button className={styles.btnClose} onClick={() => setOpen(!open)}>Cancelar</button>
+              <button className={styles.btnSave} onClick={saveMusic}>Salvar</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}

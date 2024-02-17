@@ -1,0 +1,136 @@
+.repertoires {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 15px 100px;
+    gap: 15px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.header button {
+    background-color: var(--secondary);
+    color: var(--text-primary);
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.repertoires input {
+    position: relative;
+    width: 100%;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.44);
+    background: #FFF;
+    box-shadow: var(--box-shadow-light);
+    padding: 0px 15px;
+}
+
+.repertoireCard {
+    background-color: var(--primary);
+    padding: 15px 15px 30px;
+    border-radius: 15px;
+    box-shadow: var(--box-shadow);
+    text-decoration: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+}
+
+.repertoireCard span, .repertoireCard p {
+    color: var(--text-secondary);
+}
+
+.repertoireCard > div {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white);
+    padding: 10px;
+    border-radius: 15px;
+    gap: 7px;
+}
+
+
+.repertoireCardHeader {
+    position: relative;
+}
+
+.repertoireCardHeader > div {
+    position: absolute;
+    top: 0;
+    right: 2px;
+}
+
+.repertoireCardHeader span {
+    font-size: 1.2em;
+    padding: 5px;
+}
+
+.repertoireCardHeader ul {
+    position: absolute;
+    top: 20px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    list-style: none;
+    background-color: var(--secondary);
+    padding: 10px 5px;
+    border-radius: 10px;
+    box-shadow: var(--box-shadow-light);
+    user-select: none;
+}
+
+.repertoireCardHeader ul li {
+    padding: 5px 20px;
+    border-radius: 5px;
+
+}
+
+.repertoireCardHeader ul li:hover {
+    background-color: var(--bg-hover-primary);
+}
+
+.repertoireCardBody p {
+    font-size: .8em;
+    line-height: 1.5em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.BtnAddRepertoire {
+    position: absolute;
+    right: 30px;
+    bottom: 30px;
+    background-color: var(--blue-primary);
+    padding: 20px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.BtnAddRepertoire i {
+    font-size: 1.4em;
+    color: var(--white);
+}
+
+.BtnOpenModal {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    background-color: var(--blue-primary);
+    padding: 20px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.BtnOpenModal i {
+    font-size: 1.4em;
+    color: var(--white);
+}
