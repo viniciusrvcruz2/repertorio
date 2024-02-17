@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '../../alerts/ErrorMessage'
 
 export const ModalSaveMusic = ({ open, setOpen, user, repertoireId, music = null }) => {
-  const { tokenApiSpotify, getTokenApiSpotify } = useContext(AuthContext)
+  const { tokenApiSpotify } = useContext(AuthContext)
   const { register, handleSubmit, setValue, getValues } = useForm()
   const [videoId, setVideoId] = useState('')
   const [showVideo, setShowVideo] = useState(false)

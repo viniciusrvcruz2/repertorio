@@ -4,37 +4,30 @@ import { GetDate } from '../../../utils/Utils'
 import { addDoc, collection, doc, updateDoc } from 'firebase/firestore'
 import { db } from '../../../services/firebaseConfig'
 import { ErrorMessage } from '../../alerts/ErrorMessage'
+import { useForm } from 'react-hook-form'
 
 export const ModalSaveRepertoire = ({ open, setOpen, user, repertoire = null, setRepertoire }) => {
-  const [form, setForm] = useState({
-    name: '',
-    description: ''
-  })
+  const { register, handleSubmit, setValue } = useForm()
 
   useEffect(() => {
     if(open) {
-      setForm({
-        name: (repertoire ? repertoire.name : ''), 
-        description: (repertoire ? repertoire.description : '')
-      })
-    } else {
-      if(setRepertoire) setRepertoire(null)
-      setForm({
-        name: '', 
-        description: ''
-      })
+      if(repertoire) {
+        for (const field in repertoire) {
+          setValue(field, repertoire[field]);
+        }
+      }
     }
   }, [open])
 
-  const saveRepertoire = async () => {
-    if(!form.name || !form.description) return
+  const saveRepertoire = async (data) => {
+    if(!data.name || !data.description) return
 
     setOpen(!open)
 
     if(!repertoire) {
       await addDoc(collection(db, "users", user.uid, "repertoires"), {
-        name: form.name,
-        description: form.description,
+        name: data.name,
+        description: data.description,
         createdAt: GetDate(),
         creator: user.displayName
       })
@@ -43,8 +36,8 @@ export const ModalSaveRepertoire = ({ open, setOpen, user, repertoire = null, se
       })
     } else {
       await updateDoc(doc(db, "users", user.uid, "repertoires", repertoire.id), {
-        name: form.name,
-        description: form.description
+        name: data.name,
+        description: data.description
       })
       .catch(() => {
         ErrorMessage('Não foi possível salvar o repertório')
@@ -63,13 +56,13 @@ export const ModalSaveRepertoire = ({ open, setOpen, user, repertoire = null, se
             <hr />
             <div className={styles.ModalSaveRepertoireBody}>
               <label htmlFor="name">Nome</label>
-              <input placeholder='Nome do repertório' id='name' value={form.name} form={form} setForm={setForm} attribute='name' />
+              <input placeholder='Nome do repertório' id='name' {...register('name')} />
               <label htmlFor="description">Descrição</label>
-              <textarea placeholder='Descrição do repertório' id='description' value={form.description} form={form} setForm={setForm} attribute='description' />
+              <textarea placeholder='Descrição do repertório' id='description' {...register('description')} />
             </div>
             <div className={styles.ModalSaveRepertoireFooter}>
               <button className={styles.btnClose} onClick={() => setOpen(!open)}>Cancelar</button>
-              <button className={styles.btnSave} onClick={saveRepertoire}>Salvar</button>
+              <button className={styles.btnSave} onClick={() => handleSubmit(saveRepertoire)()}>Salvar</button>
             </div>
           </div>
         </div>
