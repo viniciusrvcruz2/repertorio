@@ -14,6 +14,7 @@ export const ModalSaveMusic = ({ open, setOpen, user, repertoireId, music = null
   const { tokenApiSpotify } = useContext(AuthContext)
   const { register, handleSubmit, setValue, getValues } = useForm()
   const [videoId, setVideoId] = useState('')
+  const [image, setImage] = useState('')
   const [showVideo, setShowVideo] = useState(false)
 
   useEffect(() => {
@@ -42,11 +43,21 @@ export const ModalSaveMusic = ({ open, setOpen, user, repertoireId, music = null
         if (video.items) {
           setValue('videoUrl', `https://www.youtube.com/watch?v=${video.items[0].id.videoId}`)
           setShowVideo(false)
+
+          setImage(video.items[0].snippet.thumbnails.default.url)
         }
       })
 
     GetTrack(name, artist, tokenApiSpotify).then((track) => {
-        setValue('audioUrl', track.tracks.items[0].external_urls.spotify) 
+        if(track.tracks.items[0]) {
+          setValue('audioUrl', track.tracks.items[0].external_urls.spotify) 
+
+          if(!image) {
+            if(track.tracks.items[0].album.image) {
+              setImage(track.tracks.items[0].album.image[0].url)
+            }
+          }
+        }
       })
     
     GetLyrics(name, artist)
@@ -61,7 +72,7 @@ export const ModalSaveMusic = ({ open, setOpen, user, repertoireId, music = null
 
   const getVideoId = () => {
 
-    const videoId = VideoId(form.videoUrl)
+    const videoId = VideoId(getValues('videoUrl'))
     
     if (videoId) {
       setVideoId(videoId)
@@ -78,7 +89,7 @@ export const ModalSaveMusic = ({ open, setOpen, user, repertoireId, music = null
       formatLyrics = data.lyrics.split('\n\n');
       formatLyrics = formatLyrics.map((paragraph, index) => ({ 
         lyrics: paragraph, 
-        annotation: music ? music.lyrics[index]?.annotation : ''
+        annotation: music ? music.lyrics[index] ? music.lyrics[index].annotation : '' : ''
       }));
     }
 
@@ -92,7 +103,8 @@ export const ModalSaveMusic = ({ open, setOpen, user, repertoireId, music = null
         bpm: data.bpm,
         lyrics: formatLyrics,
         videoUrl: data.videoUrl,
-        audioUrl: data.audioUrl
+        audioUrl: data.audioUrl,
+        image: image
       }).catch(() => {
         ErrorMessage('Não foi possível salvar a música')
       })
@@ -104,7 +116,8 @@ export const ModalSaveMusic = ({ open, setOpen, user, repertoireId, music = null
         bpm: data.bpm,
         lyrics: formatLyrics,
         videoUrl: data.videoUrl,
-        audioUrl: data.audioUrl
+        audioUrl: data.audioUrl,
+        image: image ? image : music.image ? music.image : ''
       }).catch(() => {
         ErrorMessage('Não foi possível salvar o música')
       })
@@ -117,7 +130,7 @@ export const ModalSaveMusic = ({ open, setOpen, user, repertoireId, music = null
     <div className={styles.ModalSaveMusic} onClick={() => setOpen(!open)}>
       <div onClick={(e) => e.stopPropagation()}>
         <div className={styles.ModalSaveMusicHeader}>
-          <h3>Adicionar uma música</h3>
+          <h3>{music ? 'Editar música' : 'Adicionar uma música'}</h3>
         </div>
         <hr />
         <div className={styles.ModalSaveMusicBody}>
@@ -186,7 +199,7 @@ export const ModalSaveMusic = ({ open, setOpen, user, repertoireId, music = null
                 id='audioUrl'
                 {...register('audioUrl')}
               />
-              <i className="fa-solid fa-arrow-up-right-from-square" onClick={() => audioUrl && window.open(`${form.audioUrl}`, '_blank')}></i>
+              <i className="fa-solid fa-arrow-up-right-from-square" onClick={() => audioUrl && window.open(`${getValues('audioUrl')}`, '_blank')}></i>
             </div>
           </div>
           <div className={styles.inputGroup}>

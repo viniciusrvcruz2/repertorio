@@ -3,11 +3,13 @@ import styles from './RepertoireMusics.module.css'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { AuthContext } from '../../contexts/AuthContext'
 import { ModalSaveMusic } from '../../components/modal/ModalSaveMusic/ModalSaveMusic'
-import { collection, deleteDoc, doc, getDoc, getDocs, onSnapshot } from 'firebase/firestore'
+import { collection, deleteDoc, doc, onSnapshot } from 'firebase/firestore'
 import { db } from '../../services/firebaseConfig'
 import { Header } from '../../components/header/Header'
 import { ModalSaveRepertoire } from '../../components/modal/ModalSaveRepertoire/ModalSaveRepertoire'
 import { ErrorMessage } from '../../components/alerts/ErrorMessage'
+import musicImage from './../../assets/music_image.jpg'
+
 
 export const RepertoireMusics = () => {
     const { user } = useContext(AuthContext)
@@ -80,8 +82,9 @@ export const RepertoireMusics = () => {
                             return music.name.toLowerCase().includes(musicsFilter)
                         }).map((music, index) => (
                         <Link to={`/repertoire/${repertoireId}/${music.id}`} key={index}>
-                            {/* <img src="" alt="" /> */}
-                            <section>img</section>
+                            <section>
+                                <img src={music.image ? music.image : musicImage} alt="Imagem da música" />
+                            </section>
                             <div>
                                 <h5>{music.name}</h5>
                                 <p>Artista/banda: {music.artist}</p>
